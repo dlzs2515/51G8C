@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <Link Rel="SHORTCUT ICON" href="{{ url_for('static', filename='images/goc1.ico') }}">
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="description" content="GoC的Web版，可以用C语言语法命令进行编程绘图，主要用于程序设计语言C++入门学习。">
+	<meta name="keywords" content="GoC 编程 绘图">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/all.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='layui/css/layui.css') }}">
+
+	<!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	<title>51GoC	</title>
+</head>
+<body style="background: #fffaf5;">
+	<div class="game_header">
+		<a href="#" class="logo3"><img src="{{ url_for('static', filename='images/goc_logo.png') }}" alt=""></a>
+		<div class="ht_login_register">
+			<div class="login_student" style="margin-top: -3px;">
+					<div class="student_info clearfix">
+						<div class="portrait"><img src="{{ url_for('static', filename='images/temp/fox.jpg') }}" alt=""></div>
+						<span class="ui-nowrap" title="{{ username }}">{{ username }}</span>
+						<i></i>
+					</div>
+					<div class="student_updown">
+						<ul>
+						    <li><a href="javascript:load_code();" >程序</a></li>
+							<li><a href="javascript:save_code();" >保存程序</a></li>
+							{% if username != '游客' %}
+							<div>
+								<a href="javascript:;">文件管理</a>
+								<ul class="student_updown_submenu">
+									<!-- 修改：将原来的javascript触发改为跳转到上传页面 -->
+									<li><a href="{{ url_for('upload_page') }}">上传文件</a></li>
+									<li><a href="javascript:load_user_files();">导入文件</a></li>
+								</ul>
+							</div>
+							{% endif %}
+							<li><a href="javascript:;" class="code_help">帮助</a></li>
+							{% if username == '游客' %}
+							<li><a href="{{ url_for('login') }}">登录</a></li>
+							<li><a href="{{ url_for('register') }}">注册</a></li>
+							{% else %}
+							<li><a href="{{ url_for('logout') }}">注销</a></li>
+							{% endif %}
+						</ul>
+					</div>
+			</div>
+		</div>
+	</div>
+	<div id="mainAll" style="margin-top :-10px ; margin-left:auto;margin-right:auto; " >
+			<div class="layui-fluid clearfix">
+				<div id="mainLeft">
+					<div class="mainLeft_head clearfix">
+						<div class="crumbs" id="_title" >							
+							<i>&#xe630;</i>
+							<a href="javascript:;">GoC单机版版V1.2.0</a>  						
+						</div>  				
+					</div>				
+					<div  class="canvasBox" >  					
+					 <canvas id="canvas_background" style=" background-color: white ;" class="canvas" >  
+					 Ooooooop! Older browsers DO NOT support canvas.<br>
+					 你的浏览器不支持canvas，请换新版浏览器！
+					 </canvas>		  
+					 <canvas id="canvas_std" class="canvas">  </canvas>	
+					 <canvas id="canvas_pic1" class="canvas">  </canvas>		  
+					 <canvas id="canvas_code" class="canvas">  </canvas>
+					 <canvas id="canvas_pic" class="canvas">  </canvas>
+					 <canvas id="canvas_pen" class="canvas">  </canvas>	
+					 <canvas id="canvas_top" class="canvas">  </canvas>					 
+					</div>       
+					
+				</div>
+				<div id="mainRight">
+					<div class="game_code">
+					    <div class ="code_top1">
+					       <span>
+							  <a href="javascript:goc.HOME();" class="background "><i class="layui-icon" >&#xe9aa;</i>清屏</a>
+							  <a  id="setOption" href="#" ><i class="layui-icon">&#xe614;</i> 设置 </a>	
+							</span>  
+							
+						    <span class="code_top">							
+							  <a href="javascript:goc_button.XY();" class="coordinate"><i>&#xe633;</i>坐标</a>						
+							  <a href="javascript:goc_button.Col();" class="color_number"><i>&#xe65b;</i>色号</a>	
+							 <i>&nbsp;</i>
+						    </span>
+					    </div>
+					
+						   <div  id="codeMirror-area">					
+						   </div>  				
+						
+
+						<div class="code_button" >
+						   <a href="javascript:goc.run_kill();" class="code_run">运行</a>
+						   <a href="javascript:mode.newWin();" class="code_submit">演示</a>
+						   <a href="javascript:;" class="code_input">常见命令</a>
+						</div>						
+						<div  class="code_ts">
+						    <div style="margin-top:-15px; font-size: 18px; color: #1E9FFF;" >
+						       <b>cinWin &nbsp;</b>
+							    <textarea style="display:block;width:100%;padding-left:10px;border-radius:5px;border:1px solid #f2d0ae;"; rows="3"; id="cin-area"  ></textarea>
+						    </div>
+						    <div style="margin-top:5px; font-size: 18px; color: #1E9FFF; " >
+						       <b>coutWin</b>
+							   <textarea style="display:block;width:100%;  padding-left:10px;border-radius:5px; border:1px solid #f2d0ae; background:#fffbf5;" rows="3"; id="cout-area" readonly ></textarea>  					   
+						    </div>
+							
+						</div>
+						
+					</div>
+					
+				</div>
+		    </div>
+  	</div>  
+ <input type ="file" id="file_load"  style="display:none"  accept=".cpp"  name="load_file" value="goc.cpp" onchange="loadFile()"; />
+	
+	<!-- 隐藏的文件上传表单 -->
+	<form id="upload_form" style="display:none;" action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+		<input type="file" id="file_upload" name="file" accept=".cpp" onchange="this.form.submit()">
+	</form>
+	
+	<!-- 导入文件对话框 -->
+	<div id="import_dialog" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; z-index:1000; border:1px solid #ccc;">
+		<h3>选择要导入的文件</h3>
+		<div id="file_list"></div>
+		<button onclick="document.getElementById('import_dialog').style.display='none'">取消</button>
+	</div>
+	
+	<script>
+		// 加载用户文件列表
+		function load_user_files() {
+			fetch('/get_user_files')
+				.then(response => response.json())
+				.then(files => {
+					const fileList = document.getElementById('file_list');
+					fileList.innerHTML = '';
+					
+					if(files.length === 0) {
+						fileList.innerHTML = '<p>您还没有上传任何文件</p>';
+						return;
+					}
+					
+					files.forEach(file => {
+						const fileItem = document.createElement('div');
+						fileItem.innerHTML = `<a href="javascript:import_file('${file}')">${file}</a>`;
+						fileList.appendChild(fileItem);
+					});
+					
+					document.getElementById('import_dialog').style.display = 'block';
+				});
+		}
+		
+		// 导入文件
+		function import_file(filename) {
+			fetch(`/get_file_content?filename=${encodeURIComponent(filename)}`)
+				.then(response => response.text())
+				.then(content => {
+					// 假设editor是代码编辑器的实例
+					if(window.editor) {
+						window.editor.setValue(content);
+					}
+					document.getElementById('import_dialog').style.display = 'none';
+					alert('文件导入成功！');
+				});
+		}
+	</script>
+	
+</body>
+
+<script src="{{ url_for('static', filename='js/all_p.js') }}"></script>
+<script src="{{ url_for('static', filename='layui/layui.js') }}"></script>
+<script src="{{ url_for('static', filename='js/priv/all.js') }}"></script>
+
+</html>
